@@ -7,6 +7,11 @@ DESTDIR = ./bin
 MOC_DIR = ./tmp
 OBJECTS_DIR = ./tmp
 
-SOURCES += src/main.cpp
+SOURCES += \
+    src/main.cpp\
+    src/MainFrame.cpp\
+    src/TitleBar.cpp
 
-# HEADERS  += MainWindow.h
+HEADERS  += \
+    src/MainFrame.h\
+    src/TitleBar.h
