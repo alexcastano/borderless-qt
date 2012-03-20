@@ -16,16 +16,25 @@ MainFrame::MainFrame()
     mMainWindow = new QMainWindow(this);
     mMainWindow->setWindowFlags(Qt::Widget);
 
+    // Creating action
     QAction *action = new QAction(QIcon::fromTheme("document-open"), tr("&Open..."), this);
     action->setShortcuts(QKeySequence::Open);
-    action->setStatusTip(tr("Open an existing file"));
+    action->setStatusTip(tr("Do nothing ;)"));
 
+    // Creating toolbar
     QToolBar *toolbar = new QToolBar(mMainWindow);
     toolbar->addAction(action);
     mMainWindow->addToolBar(toolbar);
 
+    // Creating menu
     QMenu *menu = mMainWindow->menuBar()->addMenu(tr("&File"));
     menu->addAction(action);
+
+    // Creating dock
+    QDockWidget *dockWidget = new QDockWidget(tr("Dock Widget"), this);
+    QPushButton *pushButton = new QPushButton(QIcon::fromTheme("edit-undo"),"Panic",dockWidget);
+    dockWidget->setWidget(pushButton);
+    mMainWindow->addDockWidget(Qt::RightDockWidgetArea, dockWidget);
 
     QVBoxLayout *vbox = new QVBoxLayout(this);
     vbox->addWidget(mTitleBar);
