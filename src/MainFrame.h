@@ -1,5 +1,6 @@
 #include <QtGui>
 
+#define WINDOW_MARGIN 5
 class TitleBar;
 
 class MainFrame : public QFrame
@@ -14,16 +15,17 @@ public:
     TitleBar *titleBar() const { return mTitleBar; }
 
     void mousePressEvent(QMouseEvent *e);
-
-    void mouseMoveEvent(QMouseEvent *e);
-
     void mouseReleaseEvent(QMouseEvent *e);
+
+    void mouseMove(int x, int y);
 
 private:
     TitleBar *mTitleBar;
     QMainWindow *mMainWindow;
-    QPoint m_old_pos;
-    bool m_mouse_down;
-    bool left, right, bottom;
+    QPoint mOldPos;
+    bool mMousePressed;
+    bool left;
+    bool right;
+    bool bottom;
 };
 

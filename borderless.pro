@@ -10,8 +10,10 @@ OBJECTS_DIR = ./tmp
 SOURCES += \
     src/main.cpp\
     src/MainFrame.cpp\
-    src/TitleBar.cpp
+    src/TitleBar.cpp\
+    src/HoverMoveFilter.cpp
 
 HEADERS  += \
     src/MainFrame.h\
-    src/TitleBar.h
+    src/TitleBar.h\
+    src/HoverMoveFilter.h

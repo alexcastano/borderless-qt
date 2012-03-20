@@ -1,15 +1,20 @@
 #include "MainFrame.h"
 #include "TitleBar.h"
+#include "HoverMoveFilter.h"
 
 MainFrame::MainFrame()
 {
-    m_mouse_down = false;
+    mMousePressed = false;
     setFrameShape(Panel);
 
     // Make this a borderless window which can't
     // be resized or moved via the window system
     setWindowFlags(Qt::FramelessWindowHint);
+
+    // Event tricks
     setMouseTracking(true);
+    setAttribute(Qt::WA_Hover);
+    installEventFilter(new HoverMoveFilter(this));
 
     mTitleBar = new TitleBar(this);
 
@@ -43,25 +48,27 @@ MainFrame::MainFrame()
 
     QVBoxLayout *layout = new QVBoxLayout();
     layout->addWidget(mMainWindow);
-    layout->setMargin(5);
+    layout->setMargin(WINDOW_MARGIN);
     layout->setSpacing(0);
     vbox->addLayout(layout);
 }
 
 void MainFrame::mousePressEvent(QMouseEvent *e)
 {
-    m_old_pos = e->pos();
-    m_mouse_down = e->button() == Qt::LeftButton;
+    mOldPos = e->pos();
+    mMousePressed = e->button() == Qt::LeftButton;
 }
 
-void MainFrame::mouseMoveEvent(QMouseEvent *e)
+void MainFrame::mouseReleaseEvent(QMouseEvent *e)
 {
-    int x = e->x();
-    int y = e->y();
+    mMousePressed = e->button() != Qt::LeftButton;
+}
 
-    if (m_mouse_down) {
-        int dx = x - m_old_pos.x();
-        int dy = y - m_old_pos.y();
+void MainFrame::mouseMove(int x, int y)
+{
+    if (mMousePressed) {
+        int dx = x - mOldPos.x();
+        int dy = y - mOldPos.y();
 
         QRect g = geometry();
 
@@ -74,12 +81,12 @@ void MainFrame::mouseMoveEvent(QMouseEvent *e)
 
         setGeometry(g);
 
-        m_old_pos = QPoint(!left ? e->x() : m_old_pos.x(), e->y());
+        mOldPos = QPoint(!left ? x : mOldPos.x(), y);
     } else {
         QRect r = rect();
-        left = qAbs(x - r.left()) <= 5;
-        right = qAbs(x - r.right()) <= 5;
-        bottom = qAbs(y - r.bottom()) <= 5;
+        left = qAbs(x - r.left()) <= WINDOW_MARGIN;
+        right = qAbs(x - r.right()) <= WINDOW_MARGIN;
+        bottom = qAbs(y - r.bottom()) <= WINDOW_MARGIN;
         bool hor = left | right;
 
         if (hor && bottom) {
@@ -95,10 +102,4 @@ void MainFrame::mouseMoveEvent(QMouseEvent *e)
             setCursor(Qt::ArrowCursor);
         }
     }
-}
-
-void MainFrame::mouseReleaseEvent(QMouseEvent *e)
-{
-    Q_UNUSED(e);
-    m_mouse_down = false;
 }
