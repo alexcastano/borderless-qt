@@ -128,8 +128,10 @@ void MainFrame::mouseMove(QPoint newPos, QPoint oldPos)
 
     } else {
         QRect r = rect();
-        left = qAbs(newPos.x()- r.left()) <= WINDOW_MARGIN;
-        right = qAbs(newPos.x() - r.right()) <= WINDOW_MARGIN;
+        left = qAbs(newPos.x()- r.left()) <= WINDOW_MARGIN &&
+            newPos.y() > mTitleBar->height();
+        right = qAbs(newPos.x() - r.right()) <= WINDOW_MARGIN &&
+            newPos.y() > mTitleBar->height();
         bottom = qAbs(newPos.y() - r.bottom()) <= WINDOW_MARGIN;
         bool hor = left | right;
 
