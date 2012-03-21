@@ -17,12 +17,12 @@ public:
     void mousePressEvent(QMouseEvent *e);
     void mouseReleaseEvent(QMouseEvent *e);
 
-    void mouseMove(int x, int y);
+    void mouseMove(QPoint newPos, QPoint oldPos);
 
 private:
     TitleBar *mTitleBar;
     QMainWindow *mMainWindow;
-    QPoint mOldPos;
+    QPoint mClickedPos;
     bool mMousePressed;
     bool left;
     bool right;

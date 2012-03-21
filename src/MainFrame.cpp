@@ -55,38 +55,82 @@ MainFrame::MainFrame()
 
 void MainFrame::mousePressEvent(QMouseEvent *e)
 {
-    mOldPos = e->pos();
+    // mOldPos = e->pos();
     mMousePressed = e->button() == Qt::LeftButton;
+    if (mMousePressed) {
+        if (left) {
+            mClickedPos.setX(e->pos().x());
+        }
+        if (right) {
+            mClickedPos.setX(width() - e->pos().x());
+        }
+        if (bottom) {
+            mClickedPos.setY(height() - e->pos().y());
+        }
+    }
 }
 
 void MainFrame::mouseReleaseEvent(QMouseEvent *e)
 {
-    mMousePressed = e->button() != Qt::LeftButton;
+    if (e->button() == Qt::LeftButton) {
+        mMousePressed = false;
+    }
 }
 
-void MainFrame::mouseMove(int x, int y)
+void MainFrame::mouseMove(QPoint newPos, QPoint oldPos)
 {
     if (mMousePressed) {
-        int dx = x - mOldPos.x();
-        int dy = y - mOldPos.y();
+        int dx = newPos.x() - oldPos.x();
+        int dy = newPos.y() - oldPos.y();
 
         QRect g = geometry();
+        QSize minSize = minimumSize();
 
-        if (left)
+        // We don't resize if the windows has the minimum size
+        if (left) {
+            // Fix a bug when you try to resize to less than minimum size and
+            // then the mouse goes right again.
+            if (dx < 0 && oldPos.x() > mClickedPos.x() ) {
+                dx += oldPos.x() - mClickedPos.x();
+                if (dx > 0) {
+                    dx = 0;
+                }
+            } else if ( dx > 0 && g.width() - dx < minSize.width()) {
+                dx = g.width() - minSize.width();
+            }
             g.setLeft(g.left() + dx);
-        if (right)
+        }
+
+        if (right) {
+            // Fix a bug when you try to resize to less than minimum size and
+            // then the mouse goes right again.
+            if (dx > 0 && (width() - newPos.x() > mClickedPos.x())) {
+                dx -= width() - newPos.x() - mClickedPos.x();
+                if (dx < 0) {
+                    dx = 0;
+                }
+            }
             g.setRight(g.right() + dx);
-        if (bottom)
+        }
+        if (bottom) {
+            // Fix a bug when you try to resize to less than minimum size and
+            // then the mouse goes down again.
+            if (dy > 0 && (height() - newPos.y() > mClickedPos.y())) {
+                dy -= height() - newPos.y() - mClickedPos.y();
+                if (dy < 0) {
+                    dy = 0;
+                }
+            }
             g.setBottom(g.bottom() + dy);
+        }
 
         setGeometry(g);
 
-        mOldPos = QPoint(!left ? x : mOldPos.x(), y);
     } else {
         QRect r = rect();
-        left = qAbs(x - r.left()) <= WINDOW_MARGIN;
-        right = qAbs(x - r.right()) <= WINDOW_MARGIN;
-        bottom = qAbs(y - r.bottom()) <= WINDOW_MARGIN;
+        left = qAbs(newPos.x()- r.left()) <= WINDOW_MARGIN;
+        right = qAbs(newPos.x() - r.right()) <= WINDOW_MARGIN;
+        bottom = qAbs(newPos.y() - r.bottom()) <= WINDOW_MARGIN;
         bool hor = left | right;
 
         if (hor && bottom) {
