@@ -5,6 +5,7 @@ class TitleBar : public QWidget
 Q_OBJECT
 public:
     TitleBar(QWidget *parent);
+    void titleChanged();
 
 public slots:
     void showSmall() { parentWidget()->showMinimized(); }
@@ -14,12 +15,13 @@ protected:
     void mousePressEvent(QMouseEvent *me);
     void mouseMoveEvent(QMouseEvent *me);
 
-private:
-    QToolButton *minimize;
-    QToolButton *maximize;
-    QToolButton *close;
-    QPixmap restorePix, maxPix;
-    bool maxNormal;
-    QPoint startPos;
-    QPoint clickPos;
+    QLabel *mLabel;
+    QToolButton *mMinimizeButton;
+    QToolButton *mMaximizeButton;
+    QToolButton *mCloseButton;
+    QPixmap mRestorePix;
+    QPixmap mMaxPix;
+    bool mMaxNormal;
+    QPoint mStartPos;
+    QPoint mClickPos;
 };

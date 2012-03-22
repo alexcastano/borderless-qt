@@ -1,6 +1,7 @@
 #include "MainFrame.h"
 #include "TitleBar.h"
 #include "HoverMoveFilter.h"
+#include "WindowTitleFilter.h"
 
 MainFrame::MainFrame()
 {
@@ -16,7 +17,12 @@ MainFrame::MainFrame()
     setAttribute(Qt::WA_Hover);
     installEventFilter(new HoverMoveFilter(this));
 
+    // Get title changes
+    installEventFilter(new WindowTitleFilter(this));
+
+    // Title
     mTitleBar = new TitleBar(this);
+    setWindowTitle("Borderless window");
 
     mMainWindow = new QMainWindow(this);
     mMainWindow->setWindowFlags(Qt::Widget);
@@ -68,6 +74,7 @@ void MainFrame::mousePressEvent(QMouseEvent *e)
             mClickedPos.setY(height() - e->pos().y());
         }
     }
+    setWindowTitle("Resizing");
 }
 
 void MainFrame::mouseReleaseEvent(QMouseEvent *e)
@@ -75,6 +82,7 @@ void MainFrame::mouseReleaseEvent(QMouseEvent *e)
     if (e->button() == Qt::LeftButton) {
         mMousePressed = false;
     }
+    setWindowTitle("Borderless window");
 }
 
 void MainFrame::mouseMove(QPoint newPos, QPoint oldPos)

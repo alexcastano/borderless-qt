@@ -5,11 +5,11 @@
 
 class HoverMoveFilter : public QObject
 {
-    Q_OBJECT;
-    public:
+Q_OBJECT;
+public:
     HoverMoveFilter(QObject* parent);
 
-    protected:
+protected:
     bool eventFilter(QObject *obj, QEvent *event);
 };
 

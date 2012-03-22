@@ -1,78 +1,81 @@
 #include "TitleBar.h"
 
-
-TitleBar::TitleBar(QWidget *parent)
+TitleBar::TitleBar(QWidget *parent) : QWidget(parent)
 {
     // Don't let this widget inherit the parent's backround color
     setAutoFillBackground(true);
     // Use a brush with a Highlight color role to render the background
     setBackgroundRole(QPalette::Highlight);
 
-    minimize = new QToolButton(this);
-    maximize = new QToolButton(this);
-    close= new QToolButton(this);
+
+    mMinimizeButton = new QToolButton(this);
+    mMaximizeButton = new QToolButton(this);
+    mCloseButton= new QToolButton(this);
 
     // Use the style to set the button pixmaps
     QPixmap pix = style()->standardPixmap(QStyle::SP_TitleBarCloseButton);
-    close->setIcon(pix);
+    mCloseButton->setIcon(pix);
 
-    maxPix = style()->standardPixmap(QStyle::SP_TitleBarMaxButton);
-    maximize->setIcon(maxPix);
+    mMaxPix = style()->standardPixmap(QStyle::SP_TitleBarMaxButton);
+    mMaximizeButton->setIcon(mMaxPix);
 
     pix = style()->standardPixmap(QStyle::SP_TitleBarMinButton);
-    minimize->setIcon(pix);
+    mMinimizeButton->setIcon(pix);
 
-    restorePix = style()->standardPixmap(QStyle::SP_TitleBarNormalButton);
+    mRestorePix = style()->standardPixmap(QStyle::SP_TitleBarNormalButton);
 
-    minimize->setMinimumHeight(20);
-    close->setMinimumHeight(20);
-    maximize->setMinimumHeight(20);
+    mMinimizeButton->setMinimumHeight(20);
+    mCloseButton->setMinimumHeight(20);
+    mMaximizeButton->setMinimumHeight(20);
 
 
-    QLabel *label = new QLabel(this);
-    label->setText("Window Title");
-    parent->setWindowTitle("Window Title");
+    mLabel = new QLabel(this);
+    mLabel->setText(parent->windowTitle());
 
     QHBoxLayout *hbox = new QHBoxLayout(this);
 
-    hbox->addWidget(label);
-    hbox->addWidget(minimize);
-    hbox->addWidget(maximize);
-    hbox->addWidget(close);
+    hbox->addWidget(mLabel);
+    hbox->addWidget(mMinimizeButton);
+    hbox->addWidget(mMaximizeButton);
+    hbox->addWidget(mCloseButton);
 
     hbox->insertStretch(1, 500);
     hbox->setSpacing(0);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
-    maxNormal = false;
+    mMaxNormal = false;
 
-    connect(close, SIGNAL( clicked() ), parent, SLOT(close() ) );
-    connect(minimize, SIGNAL( clicked() ), this, SLOT(showSmall() ) );
-    connect(maximize, SIGNAL( clicked() ), this, SLOT(showMaxRestore() ) );
+    connect(mCloseButton, SIGNAL( clicked() ), parent, SLOT(close() ) );
+    connect(mMinimizeButton, SIGNAL( clicked() ), this, SLOT(showSmall() ) );
+    connect(mMaximizeButton, SIGNAL( clicked() ), this, SLOT(showMaxRestore() ) );
 }
 
+void TitleBar::titleChanged()
+{
+    mLabel->setText(parentWidget()->windowTitle());
+}
 void TitleBar::showMaxRestore()
 {
-    if (maxNormal) {
+    if (mMaxNormal) {
         parentWidget()->showNormal();
-        maxNormal = !maxNormal;
-        maximize->setIcon(maxPix);
+        mMaxNormal = !mMaxNormal;
+        mMaximizeButton->setIcon(mMaxPix);
     } else {
         parentWidget()->showMaximized();
-        maxNormal = !maxNormal;
-        maximize->setIcon(restorePix);
+        mMaxNormal = !mMaxNormal;
+        mMaximizeButton->setIcon(mRestorePix);
     }
 }
 
 void TitleBar::mousePressEvent(QMouseEvent *me)
 {
-    startPos = me->globalPos();
-    clickPos = mapToParent(me->pos());
+    mStartPos = me->globalPos();
+    mClickPos = mapToParent(me->pos());
 }
 
 void TitleBar::mouseMoveEvent(QMouseEvent *me)
 {
-    if (maxNormal)
+    if (mMaxNormal)
         return;
-    parentWidget()->move(me->globalPos() - clickPos);
+    parentWidget()->move(me->globalPos() - mClickPos);
 }
