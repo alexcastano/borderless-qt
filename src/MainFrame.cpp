@@ -73,8 +73,10 @@ void MainFrame::mousePressEvent(QMouseEvent *e)
         if (bottom) {
             mClickedPos.setY(height() - e->pos().y());
         }
+
+        if (cursor().shape() != Qt::ArrowCursor)
+            setWindowTitle("Resizing");
     }
-    setWindowTitle("Resizing");
 }
 
 void MainFrame::mouseReleaseEvent(QMouseEvent *e)
@@ -131,7 +133,6 @@ void MainFrame::mouseMove(QPoint newPos, QPoint oldPos)
             }
             g.setBottom(g.bottom() + dy);
         }
-
         setGeometry(g);
 
     } else {
