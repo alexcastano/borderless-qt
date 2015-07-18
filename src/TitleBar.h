@@ -16,6 +16,7 @@ public slots:
 
 protected:
     void mousePressEvent(QMouseEvent *me);
+    void mouseDoubleClickEvent(QMouseEvent *me);
     void mouseMoveEvent(QMouseEvent *me);
 
     QLabel *mLabel;
