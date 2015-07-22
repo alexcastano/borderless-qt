@@ -71,6 +71,13 @@ void TitleBar::mousePressEvent(QMouseEvent *me)
 {
     mStartPos = me->globalPos();
     mClickPos = mapToParent(me->pos());
+    QWidget::mousePressEvent(me);
+}
+
+void TitleBar::mouseDoubleClickEvent(QMouseEvent *me)
+{
+    showMaxRestore();
+    QWidget::mouseDoubleClickEvent(me);
 }
 
 void TitleBar::mouseMoveEvent(QMouseEvent *me)
