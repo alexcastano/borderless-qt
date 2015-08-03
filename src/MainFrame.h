@@ -3,7 +3,6 @@
 #include <QtWidgets>
 #endif
 
-#define WINDOW_MARGIN 5
 class TitleBar;
 
 class MainFrame : public QFrame
@@ -30,5 +29,8 @@ private:
     bool left;
     bool right;
     bool bottom;
+
+private:
+    static const int WINDOW_MARGIN = 5;
 };
 
