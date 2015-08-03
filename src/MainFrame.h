@@ -16,8 +16,10 @@ public:
 
     TitleBar *titleBar() const { return mTitleBar; }
 
-    void mousePressEvent(QMouseEvent *e);
-    void mouseReleaseEvent(QMouseEvent *e);
+protected:
+    void mousePressEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
+    void mouseReleaseEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
+    void mouseMoveEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
 
     void mouseMove(QPoint newPos, QPoint oldPos);
 
