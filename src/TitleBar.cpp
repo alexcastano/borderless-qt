@@ -88,7 +88,8 @@ void TitleBar::mouseDoubleClickEvent(QMouseEvent *me)
 
 void TitleBar::mouseMoveEvent(QMouseEvent *me)
 {
-    if (mMaxNormal)
-        return;
+    if (mMaxNormal) {
+        return QWidget::mouseMoveEvent(me);
+    }
     parentWidget()->move(me->globalPos() - mClickPos);
 }
