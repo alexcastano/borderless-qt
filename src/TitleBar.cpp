@@ -3,6 +3,7 @@
 TitleBar::TitleBar(QWidget *parent)
     : QWidget(parent)
     , mMaxNormal(false)
+    , mMouseButtonPressed(false)
 {
     // Don't let this widget inherit the parent's backround color
     setAutoFillBackground(true);
@@ -76,6 +77,7 @@ void TitleBar::enterEvent(QEvent* e)
 void TitleBar::mousePressEvent(QMouseEvent *me)
 {
     if (me->button() == Qt::LeftButton) {
+        mMouseButtonPressed = true;
         mStartPos = me->globalPos();
         mClickPos = mapToParent(me->pos());
     } else {
@@ -86,6 +88,7 @@ void TitleBar::mousePressEvent(QMouseEvent *me)
 void TitleBar::mouseReleaseEvent(QMouseEvent* me)
 {
     if (me->button() == Qt::LeftButton) {
+        mMouseButtonPressed = false;
         mStartPos = QPoint();
         mClickPos = QPoint();
     } else {
@@ -104,8 +107,9 @@ void TitleBar::mouseDoubleClickEvent(QMouseEvent *me)
 
 void TitleBar::mouseMoveEvent(QMouseEvent *me)
 {
-    if (mMaxNormal) {
+    if (mMouseButtonPressed && !mMaxNormal) {
+        parentWidget()->move(me->globalPos() - mClickPos);
+    } else {
         return QWidget::mouseMoveEvent(me);
     }
-    parentWidget()->move(me->globalPos() - mClickPos);
 }

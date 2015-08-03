@@ -30,4 +30,5 @@ protected:
     bool mMaxNormal;
     QPoint mStartPos;
     QPoint mClickPos;
+    bool mMouseButtonPressed;
 };
