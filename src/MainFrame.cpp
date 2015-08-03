@@ -3,6 +3,54 @@
 #include "HoverMoveFilter.h"
 #include "WindowTitleFilter.h"
 
+namespace Private {
+
+    /**
+    * @internal
+    *
+    * @class Private::WindowEventFilter
+    *
+    * @brief            Event filter for the frame's child widget (the main Window).
+    *
+    * @param filtered   the filtered widget
+    *
+    * @param parent     the parent takes ownership of this event filter object
+    *
+    */
+    class WindowEventFilter : public QObject
+    {
+    public:
+        WindowEventFilter(QWidget* filtered, QObject* parent)
+            : QObject(parent)
+            , mFiltered(filtered)
+        {
+            Q_ASSERT(filtered && parent);
+            filtered->installEventFilter(this);
+        }
+
+    private:
+        bool eventFilter(QObject* o, QEvent* e)
+        {
+            Q_ASSERT(o == mFiltered);
+
+            switch (e->type()) {
+            default: break;
+
+            case QEvent::Enter:
+            case QEvent::Leave:
+                mFiltered->setCursor(Qt::ArrowCursor);
+                break;
+            }
+
+            return QObject::eventFilter(o, e);
+        }
+
+    private:
+        QWidget* mFiltered;
+    };
+
+}
+
 MainFrame::MainFrame()
     : QFrame(0, Qt::FramelessWindowHint)
 {
