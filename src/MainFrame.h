@@ -3,7 +3,6 @@
 #include <QtWidgets>
 #endif
 
-#define WINDOW_MARGIN 5
 class TitleBar;
 
 class MainFrame : public QFrame
@@ -17,18 +16,26 @@ public:
 
     TitleBar *titleBar() const { return mTitleBar; }
 
-    void mousePressEvent(QMouseEvent *e);
-    void mouseReleaseEvent(QMouseEvent *e);
+protected:
+    void mousePressEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
+    void mouseReleaseEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
+    void mouseMoveEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
 
-    void mouseMove(QPoint newPos, QPoint oldPos);
 
 private:
     TitleBar *mTitleBar;
     QMainWindow *mMainWindow;
-    QPoint mClickedPos;
-    bool mMousePressed;
-    bool left;
-    bool right;
-    bool bottom;
+
+    QPoint  mClickedPos;
+    QRect   mFrameGeometry;
+    QSize   mMinSize;
+    bool    mMousePressed;
+    bool    mLeft;
+    bool    mRight;
+    bool    mTop;
+    bool    mBottom;
+
+private:
+    static const int WINDOW_MARGIN = 5;
 };
 

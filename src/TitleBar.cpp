@@ -1,6 +1,9 @@
 #include "TitleBar.h"
 
-TitleBar::TitleBar(QWidget *parent) : QWidget(parent)
+TitleBar::TitleBar(QWidget *parent)
+    : QWidget(parent)
+    , mMaxNormal(false)
+    , mMouseButtonPressed(false)
 {
     // Don't let this widget inherit the parent's backround color
     setAutoFillBackground(true);
@@ -43,8 +46,6 @@ TitleBar::TitleBar(QWidget *parent) : QWidget(parent)
     hbox->setSpacing(0);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 
-    mMaxNormal = false;
-
     connect(mCloseButton, SIGNAL( clicked() ), parent, SLOT(close() ) );
     connect(mMinimizeButton, SIGNAL( clicked() ), this, SLOT(showSmall() ) );
     connect(mMaximizeButton, SIGNAL( clicked() ), this, SLOT(showMaxRestore() ) );
@@ -67,22 +68,48 @@ void TitleBar::showMaxRestore()
     }
 }
 
+void TitleBar::enterEvent(QEvent* e)
+{
+    setCursor(Qt::ArrowCursor);
+    QWidget::enterEvent(e);
+}
+
 void TitleBar::mousePressEvent(QMouseEvent *me)
 {
-    mStartPos = me->globalPos();
-    mClickPos = mapToParent(me->pos());
-    QWidget::mousePressEvent(me);
+    if (me->button() == Qt::LeftButton) {
+        mMouseButtonPressed = true;
+        mStartPos = me->globalPos();
+        mClickPos = mapToParent(me->pos());
+    } else {
+        QWidget::mousePressEvent(me);
+    }
+}
+
+void TitleBar::mouseReleaseEvent(QMouseEvent* me)
+{
+    if (me->button() == Qt::LeftButton) {
+        mMouseButtonPressed = false;
+        mStartPos = QPoint();
+        mClickPos = QPoint();
+    } else {
+        QWidget::mouseReleaseEvent(me);
+    }
 }
 
 void TitleBar::mouseDoubleClickEvent(QMouseEvent *me)
 {
-    showMaxRestore();
+    if (me->button() == Qt::LeftButton) {
+        showMaxRestore();
+    }
+
     QWidget::mouseDoubleClickEvent(me);
 }
 
 void TitleBar::mouseMoveEvent(QMouseEvent *me)
 {
-    if (mMaxNormal)
-        return;
-    parentWidget()->move(me->globalPos() - mClickPos);
+    if (mMouseButtonPressed && !mMaxNormal) {
+        parentWidget()->move(me->globalPos() - mClickPos);
+    } else {
+        return QWidget::mouseMoveEvent(me);
+    }
 }

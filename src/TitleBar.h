@@ -15,9 +15,11 @@ public slots:
     void showMaxRestore();
 
 protected:
-    void mousePressEvent(QMouseEvent *me);
-    void mouseDoubleClickEvent(QMouseEvent *me);
-    void mouseMoveEvent(QMouseEvent *me);
+    void enterEvent(QEvent *e) Q_DECL_OVERRIDE;
+    void mousePressEvent(QMouseEvent *me) Q_DECL_OVERRIDE;
+    void mouseReleaseEvent(QMouseEvent *me) Q_DECL_OVERRIDE;
+    void mouseDoubleClickEvent(QMouseEvent *me) Q_DECL_OVERRIDE;
+    void mouseMoveEvent(QMouseEvent *me) Q_DECL_OVERRIDE;
 
     QLabel *mLabel;
     QToolButton *mMinimizeButton;
@@ -28,4 +30,5 @@ protected:
     bool mMaxNormal;
     QPoint mStartPos;
     QPoint mClickPos;
+    bool mMouseButtonPressed;
 };
