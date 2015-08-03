@@ -1,6 +1,5 @@
 #include "MainFrame.h"
 #include "TitleBar.h"
-#include "HoverMoveFilter.h"
 #include "WindowTitleFilter.h"
 
 namespace Private {
@@ -61,7 +60,6 @@ MainFrame::MainFrame()
     // Event tricks
     setMouseTracking(true);
     setAttribute(Qt::WA_Hover);
-    installEventFilter(new HoverMoveFilter(this));
 
     // Get title changes
     installEventFilter(new WindowTitleFilter(this));
@@ -72,6 +70,7 @@ MainFrame::MainFrame()
 
     mMainWindow = new QMainWindow(this);
     mMainWindow->setWindowFlags(Qt::Widget);
+    new Private::WindowEventFilter(mMainWindow, this);
 
     // Creating action
     QAction *action = new QAction(QIcon::fromTheme("document-open"), tr("&Open..."), this);
@@ -107,100 +106,88 @@ MainFrame::MainFrame()
 
 void MainFrame::mousePressEvent(QMouseEvent *e)
 {
-    // mOldPos = e->pos();
-    mMousePressed = e->button() == Qt::LeftButton;
-    if (mMousePressed) {
-        if (left) {
-            mClickedPos.setX(e->pos().x());
-        }
-        if (right) {
-            mClickedPos.setX(width() - e->pos().x());
-        }
-        if (bottom) {
-            mClickedPos.setY(height() - e->pos().y());
-        }
+    if (e->button() != Qt::LeftButton) {
+        return QFrame::mousePressEvent(e);
+    }
 
-        if (cursor().shape() != Qt::ArrowCursor)
-            setWindowTitle("Resizing");
+    mMousePressed = true;
+    mClickedPos = e->globalPos();
+    mFrameGeometry = geometry();
+    mMinSize = minimumSizeHint();
+
+    if (cursor().shape() != Qt::ArrowCursor) {
+        setWindowTitle("Resizing");
     }
 }
 
 void MainFrame::mouseReleaseEvent(QMouseEvent *e)
 {
-    if (e->button() == Qt::LeftButton) {
-        mMousePressed = false;
+    if (e->button() != Qt::LeftButton) {
+        return QFrame::mousePressEvent(e);
     }
+
+    mMousePressed = false;
+    mFrameGeometry = QRect();
+    mClickedPos = QPoint();
     setWindowTitle("Borderless window");
 }
 
-void MainFrame::mouseMove(QPoint newPos, QPoint oldPos)
+void MainFrame::mouseMoveEvent(QMouseEvent* e)
 {
     if (mMousePressed) {
-        int dx = newPos.x() - oldPos.x();
-        int dy = newPos.y() - oldPos.y();
+        const int dx = e->globalPos().x() - mClickedPos.x();
+        const int dy = e->globalPos().y() - mClickedPos.y();
 
-        QRect g = geometry();
-        QSize minSize = minimumSize();
+        QRect g = mFrameGeometry;
 
-        // We don't resize if the windows has the minimum size
-        if (left) {
-            // Fix a bug when you try to resize to less than minimum size and
-            // then the mouse goes right again.
-            if (dx < 0 && oldPos.x() > mClickedPos.x() ) {
-                dx += oldPos.x() - mClickedPos.x();
-                if (dx > 0) {
-                    dx = 0;
-                }
-            } else if ( dx > 0 && g.width() - dx < minSize.width()) {
-                dx = g.width() - minSize.width();
-            }
+        // don't resize if the window reached the minimum size
+        if (mLeft) {
             g.setLeft(g.left() + dx);
-        }
-
-        if (right) {
-            // Fix a bug when you try to resize to less than minimum size and
-            // then the mouse goes right again.
-            if (dx > 0 && (width() - newPos.x() > mClickedPos.x())) {
-                dx -= width() - newPos.x() - mClickedPos.x();
-                if (dx < 0) {
-                    dx = 0;
-                }
-            }
+        } else if (mRight) {
             g.setRight(g.right() + dx);
         }
-        if (bottom) {
-            // Fix a bug when you try to resize to less than minimum size and
-            // then the mouse goes down again.
-            if (dy > 0 && (height() - newPos.y() > mClickedPos.y())) {
-                dy -= height() - newPos.y() - mClickedPos.y();
-                if (dy < 0) {
-                    dy = 0;
-                }
-            }
+
+        if (mTop) {
+            g.setTop(g.top() + dy);
+        } else if (mBottom) {
             g.setBottom(g.bottom() + dy);
         }
-        setGeometry(g);
 
+        if (g.width() > mMinSize.width() && g.height() > mMinSize.height()) {
+            setGeometry(g);
+        }
     } else {
-        QRect r = rect();
-        left = qAbs(newPos.x()- r.left()) <= WINDOW_MARGIN &&
-            newPos.y() > mTitleBar->height();
-        right = qAbs(newPos.x() - r.right()) <= WINDOW_MARGIN &&
-            newPos.y() > mTitleBar->height();
-        bottom = qAbs(newPos.y() - r.bottom()) <= WINDOW_MARGIN;
-        bool hor = left | right;
+        const QRect r = frameRect();
+        const int px = e->pos().x();
+        const int py = e->pos().y();
 
-        if (hor && bottom) {
-            if (left)
+        mLeft   = px <= WINDOW_MARGIN && px >= 0;
+        mRight  = px >= r.right() - WINDOW_MARGIN && px <= r.right();
+        mTop    = py <= WINDOW_MARGIN && py >= 0;
+        mBottom = py >= r.bottom() - WINDOW_MARGIN && py <= r.bottom();
+
+        bool hor = mLeft || mRight;
+
+        if (mBottom) {
+            if (mLeft) {
                 setCursor(Qt::SizeBDiagCursor);
-            else
+            } else if (mRight) {
                 setCursor(Qt::SizeFDiagCursor);
+            } else {
+                setCursor(Qt::SizeVerCursor);
+            }
+        } else if (mTop) {
+            if (mLeft) {
+                setCursor(Qt::SizeFDiagCursor);
+            } else if (mRight) {
+                setCursor(Qt::SizeBDiagCursor);
+            } else {
+                setCursor(Qt::SizeVerCursor);
+            }
         } else if (hor) {
             setCursor(Qt::SizeHorCursor);
-        } else if (bottom) {
-            setCursor(Qt::SizeVerCursor);
-        } else {
-            setCursor(Qt::ArrowCursor);
         }
     }
+
+    QFrame::mouseMoveEvent(e);
 }

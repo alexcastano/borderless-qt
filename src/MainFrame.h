@@ -21,18 +21,20 @@ protected:
     void mouseReleaseEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
     void mouseMoveEvent(QMouseEvent *e) Q_DECL_OVERRIDE;
 
-    void mouseMove(QPoint newPos, QPoint oldPos);
 
 private:
     TitleBar *mTitleBar;
     QMainWindow *mMainWindow;
 
     QPoint  mClickedPos;
+    QRect   mFrameGeometry;
+    QSize   mMinSize;
     bool    mMousePressed;
     bool    mLeft;
     bool    mRight;
     bool    mTop;
     bool    mBottom;
+
 private:
     static const int WINDOW_MARGIN = 5;
 };
