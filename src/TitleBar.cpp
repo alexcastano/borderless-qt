@@ -78,9 +78,19 @@ void TitleBar::mousePressEvent(QMouseEvent *me)
     if (me->button() == Qt::LeftButton) {
         mStartPos = me->globalPos();
         mClickPos = mapToParent(me->pos());
+    } else {
+        QWidget::mousePressEvent(me);
     }
+}
 
-    QWidget::mousePressEvent(me);
+void TitleBar::mouseReleaseEvent(QMouseEvent* me)
+{
+    if (me->button() == Qt::LeftButton) {
+        mStartPos = QPoint();
+        mClickPos = QPoint();
+    } else {
+        QWidget::mouseReleaseEvent(me);
+    }
 }
 
 void TitleBar::mouseDoubleClickEvent(QMouseEvent *me)
