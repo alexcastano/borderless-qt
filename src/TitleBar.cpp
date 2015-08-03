@@ -67,6 +67,12 @@ void TitleBar::showMaxRestore()
     }
 }
 
+void TitleBar::enterEvent(QEvent* e)
+{
+    setCursor(Qt::ArrowCursor);
+    QWidget::enterEvent(e);
+}
+
 void TitleBar::mousePressEvent(QMouseEvent *me)
 {
     mStartPos = me->globalPos();

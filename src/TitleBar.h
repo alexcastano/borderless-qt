@@ -15,6 +15,7 @@ public slots:
     void showMaxRestore();
 
 protected:
+    void enterEvent(QEvent *e) Q_DECL_OVERRIDE;
     void mousePressEvent(QMouseEvent *me);
     void mouseDoubleClickEvent(QMouseEvent *me);
     void mouseMoveEvent(QMouseEvent *me);
