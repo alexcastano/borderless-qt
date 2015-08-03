@@ -4,14 +4,10 @@
 #include "WindowTitleFilter.h"
 
 MainFrame::MainFrame()
-    : QFrame()
+    : QFrame(0, Qt::FramelessWindowHint)
 {
     mMousePressed = false;
     setFrameShape(Panel);
-
-    // Make this a borderless window which can't
-    // be resized or moved via the window system
-    setWindowFlags(Qt::FramelessWindowHint);
 
     // Event tricks
     setMouseTracking(true);
