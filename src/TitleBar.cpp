@@ -75,14 +75,20 @@ void TitleBar::enterEvent(QEvent* e)
 
 void TitleBar::mousePressEvent(QMouseEvent *me)
 {
-    mStartPos = me->globalPos();
-    mClickPos = mapToParent(me->pos());
+    if (me->button() == Qt::LeftButton) {
+        mStartPos = me->globalPos();
+        mClickPos = mapToParent(me->pos());
+    }
+
     QWidget::mousePressEvent(me);
 }
 
 void TitleBar::mouseDoubleClickEvent(QMouseEvent *me)
 {
-    showMaxRestore();
+    if (me->button() == Qt::LeftButton) {
+        showMaxRestore();
+    }
+
     QWidget::mouseDoubleClickEvent(me);
 }
 
