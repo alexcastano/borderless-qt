@@ -1,6 +1,8 @@
 #include "TitleBar.h"
 
-TitleBar::TitleBar(QWidget *parent) : QWidget(parent)
+TitleBar::TitleBar(QWidget *parent)
+    : QWidget(parent)
+    , mMaxNormal(false)
 {
     // Don't let this widget inherit the parent's backround color
     setAutoFillBackground(true);
@@ -42,8 +44,6 @@ TitleBar::TitleBar(QWidget *parent) : QWidget(parent)
     hbox->insertStretch(1, 500);
     hbox->setSpacing(0);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-
-    mMaxNormal = false;
 
     connect(mCloseButton, SIGNAL( clicked() ), parent, SLOT(close() ) );
     connect(mMinimizeButton, SIGNAL( clicked() ), this, SLOT(showSmall() ) );
