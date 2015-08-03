@@ -26,12 +26,12 @@ protected:
 private:
     TitleBar *mTitleBar;
     QMainWindow *mMainWindow;
-    QPoint mClickedPos;
-    bool mMousePressed;
-    bool left;
-    bool right;
-    bool bottom;
 
+    QPoint  mClickedPos;
+    bool    mMousePressed;
+    bool    mLeft;
+    bool    mRight;
+    bool    mBottom;
 private:
     static const int WINDOW_MARGIN = 5;
 };
