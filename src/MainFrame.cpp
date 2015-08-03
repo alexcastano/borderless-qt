@@ -4,6 +4,7 @@
 #include "WindowTitleFilter.h"
 
 MainFrame::MainFrame()
+    : QFrame()
 {
     mMousePressed = false;
     setFrameShape(Panel);
