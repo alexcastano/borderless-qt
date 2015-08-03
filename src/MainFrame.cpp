@@ -59,7 +59,6 @@ MainFrame::MainFrame()
 
     // Event tricks
     setMouseTracking(true);
-    setAttribute(Qt::WA_Hover);
 
     // Get title changes
     installEventFilter(new WindowTitleFilter(this));
