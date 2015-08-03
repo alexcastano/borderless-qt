@@ -54,6 +54,7 @@ namespace Private {
 MainFrame::MainFrame()
     : QFrame(0, Qt::FramelessWindowHint)
 {
+    mLeft = mRight = mTop = mBottom = false;
     mMousePressed = false;
     setFrameShape(Panel);
 

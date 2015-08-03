@@ -31,6 +31,7 @@ private:
     bool    mMousePressed;
     bool    mLeft;
     bool    mRight;
+    bool    mTop;
     bool    mBottom;
 private:
     static const int WINDOW_MARGIN = 5;
